@@ -54,14 +54,10 @@ class _GamePlayPageState extends State<GamePlayPage> {
                       expression.clear();
                     });
                   },
-                  child: Text('RESET',
-                    style: TextStyle(
-                      fontSize: 20
-                    ),
-                  ),
+                  child: Text('RESET', style: TextStyle(fontSize: 20)),
                 ),
               ),
-              SizedBox(width: 30,),
+              SizedBox(width: 30),
               Container(
                 width: 150,
                 height: 50,
@@ -72,23 +68,24 @@ class _GamePlayPageState extends State<GamePlayPage> {
                   ),
                   onPressed: () {
                     String expressionString = expression.join('');
+                    var result = 0;
+                    try{
                     Expression exp = Expression.parse(expressionString);
+                    
                     final evaluator = const ExpressionEvaluator();
-                    var result = evaluator.eval(exp, {});
-                    if(result == targetNumber){
+                    result = evaluator.eval(exp, {});
+                    }catch(e){0;}
+                  
+                    if (result == targetNumber) {
                       print('정답');
                     }
                   },
-                  child: Text('CHECK',
-                    style: TextStyle(
-                      fontSize: 20,
-                    ),
-                  ),
+                  child: Text('CHECK', style: TextStyle(fontSize: 20)),
                 ),
               ),
             ],
           ),
-          SizedBox(height: 10,),
+          SizedBox(height: 10),
           keyPads(),
         ],
       ),
@@ -97,8 +94,7 @@ class _GamePlayPageState extends State<GamePlayPage> {
 
   Widget numberPlate() {
     return Container(
-      margin: EdgeInsets.all(30),
-      padding: EdgeInsets.all(30),
+      padding: EdgeInsets.only(top: 50),
       alignment: Alignment.center,
       width: double.infinity,
       child: Text(
@@ -129,9 +125,11 @@ class _GamePlayPageState extends State<GamePlayPage> {
           arr.length,
           (i) => ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: !usedNumbers.contains(arr[i]) 
-                ? Colors.teal[400] 
-                : Colors.grey,
+              // 사용한 버튼 색 변경
+              backgroundColor:
+                  !usedNumbers.contains(arr[i])
+                      ? Colors.teal[400]
+                      : Colors.grey,
 
               foregroundColor: Colors.black,
               shape: RoundedRectangleBorder(
