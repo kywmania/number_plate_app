@@ -129,7 +129,10 @@ class _GamePlayPageState extends State<GamePlayPage> {
           arr.length,
           (i) => ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.teal[400],
+              backgroundColor: !usedNumbers.contains(arr[i]) 
+                ? Colors.teal[400] 
+                : Colors.grey,
+
               foregroundColor: Colors.black,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
