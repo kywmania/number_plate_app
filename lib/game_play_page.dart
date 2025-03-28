@@ -69,13 +69,20 @@ class _GamePlayPageState extends State<GamePlayPage> {
                   onPressed: () {
                     late int result;
                     String expressionString = expression.join('');
-                    try{
-                    Expression exp = Expression.parse(expressionString);
-                    
-                    final evaluator = const ExpressionEvaluator();
-                    result = evaluator.eval(exp, {});
-                    }catch(e){0;}
-                  
+                    // 5^2 형태를 pow(5, 2)로 변환
+                    expressionString = expressionString.replaceAllMapped(
+                      RegExp(r'(\d+)\^(\d+)'),
+                      (match) => "pow(${match.group(1)}, ${match.group(2)})",
+                    );
+                    try {
+                      Expression exp = Expression.parse(expressionString);
+
+                      final evaluator = const ExpressionEvaluator();
+                      result = evaluator.eval(exp, {"pow": pow});
+                    } catch (e) {
+                      0;
+                    }
+                    print(result);
                     if (result == targetNumber) {
                       print('정답');
                     }
