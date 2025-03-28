@@ -67,8 +67,8 @@ class _GamePlayPageState extends State<GamePlayPage> {
                     foregroundColor: Colors.black,
                   ),
                   onPressed: () {
+                    late int result;
                     String expressionString = expression.join('');
-                    var result = 0;
                     try{
                     Expression exp = Expression.parse(expressionString);
                     
