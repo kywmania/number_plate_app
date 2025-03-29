@@ -24,7 +24,7 @@ class _GamePlayPageState extends State<GamePlayPage> {
     '6',
     '()',
   ];
-  Set<String> usedNumbers = {};
+  Set<String> usedButtons = {};
 
   int targetNumber = Random().nextInt(900) + 100;
   List<String> expression = [];
@@ -50,7 +50,7 @@ class _GamePlayPageState extends State<GamePlayPage> {
                   ),
                   onPressed: () {
                     setState(() {
-                      usedNumbers.clear();
+                      usedButtons.clear();
                       expression.clear();
                     });
                   },
@@ -134,7 +134,7 @@ class _GamePlayPageState extends State<GamePlayPage> {
             style: ElevatedButton.styleFrom(
               // 사용한 버튼 색 변경
               backgroundColor:
-                  !usedNumbers.contains(arr[i])
+                  !usedButtons.contains(arr[i])
                       ? Colors.teal[400]
                       : Colors.grey,
 
@@ -145,9 +145,9 @@ class _GamePlayPageState extends State<GamePlayPage> {
             ),
             onPressed: () {
               setState(() {
-                if (!usedNumbers.contains(arr[i])) {
+                if (!usedButtons.contains(arr[i])) {
                   expression.add(arr[i]);
-                  usedNumbers.add(arr[i]);
+                  usedButtons.add(arr[i]);
                 }
               });
             },
