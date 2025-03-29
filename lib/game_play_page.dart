@@ -67,7 +67,7 @@ class _GamePlayPageState extends State<GamePlayPage> {
                     foregroundColor: Colors.black,
                   ),
                   onPressed: () {
-                    late int result;
+                    int result = 0;
                     String expressionString = expression.join('');
                     // 5^2 형태를 pow(5, 2)로 변환
                     expressionString = expressionString.replaceAllMapped(
