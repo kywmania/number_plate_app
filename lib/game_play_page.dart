@@ -26,6 +26,7 @@ class _GamePlayPageState extends State<GamePlayPage> {
   ];
   Set<String> usedButtons = {};
   List<String> expression = [];
+  bool isOpenBracketNext = true; // 다음에 입력할 괄호가 여는 괄호인지 여부
 
   int targetNumber = Random().nextInt(900) + 100;
 
@@ -37,6 +38,7 @@ class _GamePlayPageState extends State<GamePlayPage> {
         children: [
           numberPlate(),
           expressionBox(expression),
+          SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -67,28 +69,31 @@ class _GamePlayPageState extends State<GamePlayPage> {
                     foregroundColor: Colors.black,
                   ),
                   onPressed: () {
-                    double result = 0.0;
                     String expressionString = expression.join('');
 
-                    // 디버깅 로그
-                    print("입력된 수식: $expressionString");
+                    print("입력된 수식: ${expression.join('')}");
 
-                    // 5^2 형태를 pow(5, 2)로 변환
+                    // ^를 pow(...)로 변환
                     expressionString = expressionString.replaceAllMapped(
-                      RegExp(r'(\d+)\^(\d+)'),
+                      RegExp(r'(\d+)\^(\d+|\(.+?\))'), // 괄호 포함
                       (match) => "pow(${match.group(1)}, ${match.group(2)})",
                     );
 
                     try {
                       Expression exp = Expression.parse(expressionString);
-
                       final evaluator = const ExpressionEvaluator();
-                      double result = evaluator.eval(exp, {"pow": pow});
-                      int res = result.toInt();
-                      print("결과: $res");
 
-                      if (res == targetNumber) {
+                      int safePow(num base, num exponent) =>
+                          pow(base, exponent).toInt();
+
+                      int result = evaluator.eval(exp, {"pow": safePow});
+
+                      print("결과: $result");
+
+                      if (result == targetNumber) {
                         print('정답');
+                      } else {
+                        print('틀림!');
                       }
                     } catch (e) {
                       print("에러 발생: $e");
@@ -108,7 +113,7 @@ class _GamePlayPageState extends State<GamePlayPage> {
 
   Widget numberPlate() {
     return Container(
-      padding: EdgeInsets.only(top: 50),
+      padding: EdgeInsets.only(top: 30),
       alignment: Alignment.center,
       width: double.infinity,
       child: Text(
@@ -121,7 +126,12 @@ class _GamePlayPageState extends State<GamePlayPage> {
   Widget expressionBox(List<String> expression) {
     return Expanded(
       child: Container(
+        margin: EdgeInsets.all(20),
         alignment: Alignment.center,
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.green.shade900, width: 10),
+          color: Colors.white,
+        ),
         child: Text(expression.join(''), style: TextStyle(fontSize: 30)),
       ),
     );
@@ -152,9 +162,26 @@ class _GamePlayPageState extends State<GamePlayPage> {
             ),
             onPressed: () {
               setState(() {
-                if (!usedButtons.contains(arr[i])) {
-                  expression.add(arr[i]);
-                  usedButtons.add(arr[i]);
+                final value = arr[i];
+
+                if (value == '()') {
+                  if (!usedButtons.contains('(') ||
+                      !usedButtons.contains(')')) {
+                    // 괄호 번갈아 입력
+                    String bracket = isOpenBracketNext ? '(' : ')';
+                    expression.add(bracket);
+                    usedButtons.add(bracket);
+
+                    if (bracket == ')') {
+                      usedButtons.add('()');
+                    }
+                    isOpenBracketNext = !isOpenBracketNext;
+                  }
+                } else {
+                  if (!usedButtons.contains(value)) {
+                    expression.add(value);
+                    usedButtons.add(value);
+                  }
                 }
               });
             },
