@@ -10,11 +10,11 @@ class GamePlayPage extends StatefulWidget {
 }
 
 class _GamePlayPageState extends State<GamePlayPage> {
-  List<String> arr = [
+  final List<String> arr = [
     '+',
     '-',
     '*',
-    '÷',
+    '/',
     '1',
     '2',
     '3',
@@ -25,9 +25,9 @@ class _GamePlayPageState extends State<GamePlayPage> {
     '()',
   ];
   Set<String> usedButtons = {};
+  List<String> expression = [];
 
   int targetNumber = Random().nextInt(900) + 100;
-  List<String> expression = [];
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +40,7 @@ class _GamePlayPageState extends State<GamePlayPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
+              SizedBox(
                 width: 150,
                 height: 50,
                 child: ElevatedButton(
@@ -57,8 +57,8 @@ class _GamePlayPageState extends State<GamePlayPage> {
                   child: Text('RESET', style: TextStyle(fontSize: 20)),
                 ),
               ),
-              SizedBox(width: 30),
-              Container(
+              SizedBox(width: 10),
+              SizedBox(
                 width: 150,
                 height: 50,
                 child: ElevatedButton(
@@ -67,24 +67,31 @@ class _GamePlayPageState extends State<GamePlayPage> {
                     foregroundColor: Colors.black,
                   ),
                   onPressed: () {
-                    int result = 0;
+                    double result = 0.0;
                     String expressionString = expression.join('');
+
+                    // 디버깅 로그
+                    print("입력된 수식: $expressionString");
+
                     // 5^2 형태를 pow(5, 2)로 변환
                     expressionString = expressionString.replaceAllMapped(
                       RegExp(r'(\d+)\^(\d+)'),
                       (match) => "pow(${match.group(1)}, ${match.group(2)})",
                     );
+
                     try {
                       Expression exp = Expression.parse(expressionString);
 
                       final evaluator = const ExpressionEvaluator();
-                      result = evaluator.eval(exp, {"pow": pow});
+                      double result = evaluator.eval(exp, {"pow": pow});
+                      int res = result.toInt();
+                      print("결과: $res");
+
+                      if (res == targetNumber) {
+                        print('정답');
+                      }
                     } catch (e) {
-                      0;
-                    }
-                    print(result);
-                    if (result == targetNumber) {
-                      print('정답');
+                      print("에러 발생: $e");
                     }
                   },
                   child: Text('CHECK', style: TextStyle(fontSize: 20)),
@@ -115,15 +122,15 @@ class _GamePlayPageState extends State<GamePlayPage> {
     return Expanded(
       child: Container(
         alignment: Alignment.center,
-        child: Text('${expression.join('')}', style: TextStyle(fontSize: 30)),
+        child: Text(expression.join(''), style: TextStyle(fontSize: 30)),
       ),
     );
   }
 
   Widget keyPads() {
     return Container(
-      height: 350,
-      padding: EdgeInsets.fromLTRB(40, 0, 40, 40),
+      width: 350,
+      height: 300,
       child: GridView.count(
         mainAxisSpacing: 5,
         crossAxisSpacing: 10,
@@ -153,7 +160,7 @@ class _GamePlayPageState extends State<GamePlayPage> {
             },
             child: Text(
               arr[i],
-              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
             ),
           ),
         ),
